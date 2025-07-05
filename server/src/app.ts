@@ -4,14 +4,14 @@ import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import { fastify } from 'fastify'
 import {
-	hasZodFastifySchemaValidationErrors,
 	jsonSchemaTransform,
 	serializerCompiler,
 	validatorCompiler,
 } from 'fastify-type-provider-zod'
 import { linkController } from './controllers/link.controller'
-import { env } from './env'
 import { reportController } from './controllers/report.controller'
+import { env } from './env'
+import { errorHandler } from './middlewares/error-handler'
 
 const server = fastify()
 
@@ -37,16 +37,7 @@ server.register(fastifySwaggerUi, {
 	routePrefix: '/docs',
 })
 
-server.setErrorHandler((error, _, reply) => {
-
-	console.log(error)
-	if (hasZodFastifySchemaValidationErrors(error)) {
-		return reply
-			.status(400)
-			.send({ message: 'Validation error', issues: error.validation })
-	}
-	return reply.status(500).send({ message: 'Internal server error' })
-})
+server.setErrorHandler(errorHandler)
 
 server.register(linkController)
 server.register(reportController)
