@@ -1,6 +1,6 @@
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
@@ -8,6 +8,7 @@ const LinkSchema = z.object({
 	id: z.string(),
 	originalUrl: z.string(),
 	shortUrl: z.string(),
+	accessCount: z.number(),
 	createdAt: z.date(),
 })
 
@@ -23,7 +24,7 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 					shortUrl: z.string().regex(/^[A-Za-z0-9_-]+$/),
 				}),
 				response: {
-					204: z.null(),
+					201: z.object({ id: z.string().uuid() }),
 					409: z.object({ message: z.string() }),
 				},
 			},
@@ -37,12 +38,12 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 
 			if (alreadyExistentLink) return reply.code(409).send({ message: 'Link already exists' })
 
-			await db.insert(schema.links).values({
+			const [createdLink] = await db.insert(schema.links).values({
 				originalUrl,
 				shortUrl,
-			})
+			}).returning()
 
-			return reply.code(204).send()
+			return reply.code(201).send({ id: createdLink.id })
 		}
 	)
 
@@ -115,4 +116,35 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 		}
 	)
 
+	server.patch(
+		'/link/:id',
+		{
+			schema: {
+				summary: 'Increment access count',
+				tags: ['link'],
+				params: z.object({
+					id: z.string().uuid(),
+				}),
+				response: {
+					204: z.object({
+						id: z.string().uuid(),
+					}),
+					404: z.object({ message: z.string() }),
+				},
+			},
+		},
+		async (request, reply) => {
+			const { id } = request.params
+			const [updated] = await db
+				.update(schema.links)
+				.set({
+					accessCount: sql`${schema.links.accessCount} + 1`,
+				})
+				.where(eq(schema.links.id, id))
+				.returning();
+
+			if (!updated) return reply.code(404).send({ message: 'Link not found' })
+			return reply.code(200).send({ id: updated.id })
+		}
+	)
 }

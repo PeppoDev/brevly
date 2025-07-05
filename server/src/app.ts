@@ -11,6 +11,7 @@ import {
 } from 'fastify-type-provider-zod'
 import { linkController } from './controllers/link.controller'
 import { env } from './env'
+import { reportController } from './controllers/report.controller'
 
 const server = fastify()
 
@@ -37,6 +38,8 @@ server.register(fastifySwaggerUi, {
 })
 
 server.setErrorHandler((error, _, reply) => {
+
+	console.log(error)
 	if (hasZodFastifySchemaValidationErrors(error)) {
 		return reply
 			.status(400)
@@ -46,6 +49,7 @@ server.setErrorHandler((error, _, reply) => {
 })
 
 server.register(linkController)
+server.register(reportController)
 
 server.listen({ port: env.PORT, host: env.HOST }, () => {
 	console.log(`HTTP server running on port ${env.PORT}`)
