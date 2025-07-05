@@ -1,6 +1,8 @@
-import { db } from '@/infra/db'
-import { schema } from '@/infra/db/schemas'
-import { eq, sql } from 'drizzle-orm'
+import { createShortLink } from '@/use-cases/create-short-link'
+import { deleteLink } from '@/use-cases/delete-link'
+import { getLinkByShortUrl } from '@/use-cases/get-link-by-short-url'
+import { getLinks } from '@/use-cases/get-links'
+import { incrementAccessCount } from '@/use-cases/increment-access-count'
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 
@@ -31,19 +33,8 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 		},
 		async (request, reply) => {
 			const { originalUrl, shortUrl } = request.body
-
-			const alreadyExistentLink = await db.query.links.findFirst({
-				where: (el, { eq }) => eq(el.shortUrl, shortUrl),
-			})
-
-			if (alreadyExistentLink) return reply.code(409).send({ message: 'Link already exists' })
-
-			const [createdLink] = await db.insert(schema.links).values({
-				originalUrl,
-				shortUrl,
-			}).returning()
-
-			return reply.code(201).send({ id: createdLink.id })
+			const id = await createShortLink({ originalUrl, shortUrl })
+			return reply.code(201).send({ id })
 		}
 	)
 
@@ -59,7 +50,7 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 			},
 		},
 		async (_request, reply) => {
-			const response = await db.select().from(schema.links).limit(10)
+			const response = await getLinks()
 			return reply.code(200).send({ content: response })
 		}
 	)
@@ -82,10 +73,7 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 			},
 		},
 		async (request, reply) => {
-			const link = await db.query.links.findFirst({
-				where: (el, { eq }) => eq(el.shortUrl, request.params.shortUrl),
-			})
-			if (!link) return reply.code(404).send({ message: 'Link not found' })
+			const link = await getLinkByShortUrl(request.params.shortUrl)
 			return reply.code(200).send({
 				url: link.originalUrl,
 			})
@@ -110,9 +98,8 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 			},
 		},
 		async (request, reply) => {
-			const [deleted] = await db.delete(schema.links).where(eq(schema.links.id, request.params.id)).returning();
-			if (!deleted) return reply.code(404).send({ message: 'Link not found' })
-			return reply.code(200).send({ id: deleted.id })
+			const deletedId = await deleteLink(request.params.id)
+			return reply.code(200).send({ id: deletedId })
 		}
 	)
 
@@ -134,17 +121,8 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 			},
 		},
 		async (request, reply) => {
-			const { id } = request.params
-			const [updated] = await db
-				.update(schema.links)
-				.set({
-					accessCount: sql`${schema.links.accessCount} + 1`,
-				})
-				.where(eq(schema.links.id, id))
-				.returning();
-
-			if (!updated) return reply.code(404).send({ message: 'Link not found' })
-			return reply.code(200).send({ id: updated.id })
+			const updatedId = await incrementAccessCount(request.params.id)
+			return reply.code(200).send({ id: updatedId })
 		}
 	)
 }
