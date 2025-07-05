@@ -1,32 +1,48 @@
-import { keyframes } from "motion/debug";
-import theme from "tailwindcss/defaultTheme";
-
+/** @type {import('tailwindcss').Config} */
 export default {
-  theme: {
-    extend: {
-      opacity:{
-        2: "0.02",
-      },
-      fontFamily: {
-        sans: ["Inter", ...theme.fontFamily.sans],
-      },
-      fontSize: {
-        xxs: "0.625rem",
-      },
-      boxShadow: {
-        shape:
-          "0px 8px 8px rgba(0, 0, 0, 0.1), 0px 4px 4px rgba(0, 0, 0, 0.1), 0px 2px 2px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px rgba(0, 0, 0, 0.1), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.03), inset 0px 1px 0px rgba(255, 255, 255, 0.03)",
-        "shape-content":
-          "0px 0px 0px 1px rgba(0, 0, 0, 0.25), inset 0px 1px 0px rgba(255, 255, 255, 0.02), inset 0px 0px 0px 1px rgba(255, 255, 255, 0.02)",
-      },
-      animation: {
-        border: "border 2s linear infinite"
-      },
-      keyframes: {
-        border: {
-          to: {"--border-angle": "360deg"}
-        }
-      }
-    },
-  },
-};
+	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+	theme: {
+		extend: {
+			fontFamily: {
+				sans: ['Open Sans', 'sans-serif'],
+			},
+			colors: {
+				blue: {
+					base: '#2C46B1',
+					dark: '#2C4091',
+				},
+				gray: {
+					100: '#F9F9FB',
+					200: '#E4E6EC',
+					300: '#CDCFD5',
+					400: '#74798B',
+					500: '#4D505C',
+					600: '#1F2025',
+				},
+				feedback: {
+					danger: '#B12C4D',
+				},
+			},
+			fontSize: {
+				xxs: ['10px', '14px'],
+			},
+			animation: {
+				progress: 'progress 1s infinite linear',
+			},
+			keyframes: {
+				progress: {
+					'0%': {
+						transform: 'translateX(0) scaleX(0)',
+					},
+					'40%': {
+						transform: 'translateX(0%) scaleX(0.4)',
+					},
+					'100%': {
+						transform: 'translateX(100%) scaleX(0.5)',
+					},
+				},
+			},
+		},
+	},
+	plugins: [],
+}

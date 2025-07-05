@@ -21,7 +21,8 @@ export async function exportUploads(): Promise<ExportUploadsOutput> {
 			{ key: 'id', header: 'ID' },
 			{ key: 'originalUrl', header: 'Original Url' },
 			{ key: 'shortUrl', header: 'Short Url' },
-			{ key: 'created_at', header: 'Created at' },
+			{ key: 'accessCount', header: 'Access Count' },
+			{ key: 'created_at', header: 'Created At' },
 		],
 	})
 

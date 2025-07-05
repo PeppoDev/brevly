@@ -1,9 +1,15 @@
 @import "tailwindcss";
+@tailwind utilities;
 @config "../tailwind.config.js";
 
-
-@property --border-angle{
-    inherits: false;
-    initial-value: 0deg;
-    syntax: "<angle>"
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+}
+/* TODO: See if it make sense */
+@property --border-angle {
+	inherits: false;
+	initial-value: 0deg;
+	syntax: "<angle>";
 }
