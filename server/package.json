@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch --env-file=.env src/app.ts",
+    "build": "tsup src/app.ts --format esm --dts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
@@ -13,7 +14,6 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.13.10",
     "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.30.5",
