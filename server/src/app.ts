@@ -31,6 +31,7 @@ server.register(fastifySwagger, {
 
 server.register(fastifyCors, {
 	origin: '*',
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
 })
 
 server.register(fastifySwaggerUi, {

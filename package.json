@@ -1,22 +1,19 @@
 {
-  "name": "brevly",
-  "version": "1.0.0",
-  "private": true,
-  "workspaces": [
-    "server",
-    "web"
-  ],
-  "scripts": {
-    "dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter web dev\"",
-    "install:all": "pnpm install --recursive"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "concurrently": "^9.1.0",
-    "typescript": "^5.8.2"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "Brevly monorepo"
+	"name": "brevly",
+	"version": "1.0.0",
+	"private": true,
+	"workspaces": ["server", "web"],
+	"scripts": {
+		"dev": "concurrently \"pnpm --filter server dev\" \"pnpm --filter web dev\"",
+		"install:all": "pnpm install --recursive"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"concurrently": "^9.1.0",
+		"typescript": "^5.8.2"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "Brevly monorepo"
 }
