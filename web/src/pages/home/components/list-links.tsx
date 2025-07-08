@@ -1,19 +1,36 @@
 import { Button } from '@/components/button'
+import { CircularLoading } from '@/components/circular-loading'
 import { useGetLinks } from '@/http/hooks/use-get-links'
 import { useGetReport } from '@/http/hooks/use-get-report'
 import { downloadFileByUrl } from '@/utils/download-file-by-url'
 import { DownloadSimpleIcon } from '@phosphor-icons/react'
-import { Card } from './card'
+import { useMemo } from 'react'
+import { Card } from '../../../components/card'
+import { EmptyState } from './empty-state'
 import { ListItem } from './lits-item'
 
 export function ListLinks() {
-	const { data } = useGetLinks()
+	const { data, isLoading } = useGetLinks()
 	const { mutateAsync, isPending: isLoadingReport } = useGetReport()
 
 	async function handleDownloadFile() {
 		const { url } = await mutateAsync()
 		downloadFileByUrl(url)
 	}
+
+	const renderContent = useMemo(() => {
+		if (!data?.content.length) return <EmptyState />
+		if (isLoading) return <CircularLoading />
+		return data?.content.map(link => (
+			<ListItem
+				key={link.id}
+				id={link.id}
+				originalUrl={link.originalUrl}
+				shortUrl={link.shortUrl}
+				accessCount={link.accessCount}
+			/>
+		))
+	}, [data, isLoading])
 
 	return (
 		<Card className="max-w-[580px] w-full">
@@ -29,15 +46,7 @@ export function ListLinks() {
 					Baixar CSV
 				</Button>
 			</div>
-			{data?.content.map(link => (
-				<ListItem
-					key={link.id}
-					id={link.id}
-					originalUrl={link.originalUrl}
-					shortUrl={link.shortUrl}
-					accessCount={link.accessCount}
-				/>
-			))}
+			{renderContent}
 		</Card>
 	)
 }

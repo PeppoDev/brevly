@@ -1,6 +1,7 @@
 import { Button } from '@/components/button'
 import { useDeleteLink } from '@/http/hooks/use-delete-link'
 import { buildUrl } from '@/utils/build-url'
+import { triggerToast } from '@/utils/trigger-toast'
 import { CopyIcon, TrashIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
 
@@ -17,7 +18,7 @@ export function ListItem({
 	shortUrl,
 	accessCount,
 }: ListItemProps) {
-	const { mutateAsync } = useDeleteLink()
+	const { mutateAsync, isPending } = useDeleteLink()
 
 	const shortUrlWithBase = buildUrl(shortUrl)
 
@@ -26,7 +27,20 @@ export function ListItem({
 	}
 
 	async function handleDeleteLink() {
-		await mutateAsync(id)
+		try {
+			await mutateAsync(id)
+			onSuccess()
+		} catch (_error) {
+			onError()
+		}
+	}
+
+	function onSuccess() {
+		triggerToast('Link deletado com sucesso!')
+	}
+
+	function onError() {
+		triggerToast('Erro ao deletar o link', 'error')
 	}
 
 	return (
@@ -49,6 +63,7 @@ export function ListItem({
 						onClick={handleCopyToClipboard}
 					/>
 					<Button
+						disabled={isPending}
 						variant="icon"
 						icon={<TrashIcon size={16} onClick={handleDeleteLink} />}
 					/>

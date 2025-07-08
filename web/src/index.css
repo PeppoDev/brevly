@@ -1,9 +1,12 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+@property --border-angle {
+	inherits: false;
+	initial-value: 0deg;
+	syntax: "<angle>";
+}
 
-@property --border-angle{
-    inherits: false;
-    initial-value: 0deg;
-    syntax: "<angle>"
+:root {
+	--toastify-font-family: inherit;
 }
