@@ -150,17 +150,6 @@ brevly/
 └── package.json                  # Monorepo configuration
 ```
 
-## 🧪 Testing
-
-```bash
-# Run tests in server
-cd server
-pnpm test
-
-# Run tests in web
-cd web
-pnpm test
-```
 
 ## 🚀 Deployment
 
