@@ -41,7 +41,7 @@ export async function exportUploads(): Promise<ExportUploadsOutput> {
 			objectMode: true,
 			transform(chunks: unknown[], _encoding, callback) {
 				for (const chunk of chunks) {
-					this.push(normalizeData(chunk))
+					this.push(normalizeData(chunk as Record<string, string>))
 				}
 				callback()
 			},
@@ -55,11 +55,13 @@ export async function exportUploads(): Promise<ExportUploadsOutput> {
 	return { reportUrl: url }
 }
 
-export function normalizeData(chunk: any) {
+export function normalizeData(
+	decodedChunk: Record<string, string>
+): Record<string, string> {
 	return {
-		id: chunk.id,
-		originalUrl: chunk.original_url,
-		shortUrl: `https://brevly.com/${chunk.short_url}`,
-		created_at: chunk.created_at,
+		id: decodedChunk.id,
+		originalUrl: decodedChunk.original_url,
+		shortUrl: `https://brevly.com/${decodedChunk.short_url}`,
+		created_at: decodedChunk.created_at,
 	}
 }
