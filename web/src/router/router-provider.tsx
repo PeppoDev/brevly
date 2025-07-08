@@ -1,5 +1,6 @@
 import Home from '@/pages/home'
 import Redirect from '@/pages/redirect'
+import { RouterProvider as BaseProvider } from 'react-router'
 import { createBrowserRouter } from 'react-router'
 
 export const router = createBrowserRouter([
@@ -12,3 +13,7 @@ export const router = createBrowserRouter([
 		Component: Redirect,
 	},
 ])
+
+export function RouterProvider() {
+	return <BaseProvider router={router} />
+}
