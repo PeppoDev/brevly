@@ -67,6 +67,7 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 				response: {
 					200: z.object({
 						url: z.string().url(),
+						id: z.string().uuid(),
 					}),
 					404: z.object({ message: z.string() }),
 				},
@@ -76,6 +77,7 @@ export const linkController: FastifyPluginAsyncZod = async server => {
 			const link = await getLinkByShortUrl(request.params.shortUrl)
 			return reply.code(200).send({
 				url: link.originalUrl,
+				id: link.id,
 			})
 		}
 	)
