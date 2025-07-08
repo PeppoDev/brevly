@@ -3,31 +3,9 @@ import { Input } from '@/components/input'
 import { useCreateLink } from '@/http/hooks/use-create-link'
 import { useFormik } from 'formik'
 import { withZodSchema } from 'formik-validator-zod'
-import { z } from 'zod'
 import { Card } from './card'
-
-const linkPayloadSchema = z.object({
-	originalUrl: z
-		.string()
-		.nonempty('A URL original é obrigatória')
-		.url('Insira uma URL válida'),
-
-	shortUrl: z
-		.string()
-		.url('Insira uma URL válida')
-		.regex(
-			/^https?:\/\/(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]+\/[a-zA-Z0-9-_]+$/,
-			'Sua URL encurtada deve estar no formato: brevly.com/caminho'
-		)
-		.nonempty('A URL encurtada é obrigatória'),
-})
-
-const extractPathFromShortUrl = (shortUrl: string): string => {
-	const pathMatch = shortUrl.match(/^https?:\/\/(www\.)?[^\/]+\/(.+)$/)
-	return pathMatch?.[2] ?? ''
-}
-
-type LinkPayload = z.infer<typeof linkPayloadSchema>
+import { type LinkPayload, linkPayloadSchema } from '@/schemas/link-schema'
+import { extractPathFromUrl } from '@/utils/extract-path-from-url'
 
 export function CreateForm() {
 	const { mutateAsync } = useCreateLink()
@@ -42,7 +20,7 @@ export function CreateForm() {
 	})
 
 	const handleSubmit = async (payload: LinkPayload) => {
-		const shortUrlWithoutBase = extractPathFromShortUrl(payload.shortUrl)
+		const shortUrlWithoutBase = extractPathFromUrl(payload.shortUrl)
 		await mutateAsync({ ...payload, shortUrl: shortUrlWithoutBase })
 	}
 
